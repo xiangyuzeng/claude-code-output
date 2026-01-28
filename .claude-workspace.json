@@ -1,0 +1,23 @@
+{
+  "workspace": {
+    "name": "claude-code-output",
+    "description": "Claude Code investigation and automation output repository",
+    "working_directory": "/app/claude-code-output",
+    "git_enabled": true,
+    "auto_commit": false,
+    "github_repository": "https://github.com/xiangyuzeng/claude-code-output.git"
+  },
+  "preferences": {
+    "default_output_location": "/app/claude-code-output",
+    "file_organization": {
+      "investigations": "Place investigation reports here",
+      "scripts": "Place automation scripts here",
+      "docs": "Place documentation here"
+    },
+    "git_workflow": {
+      "commit_message_template": "[Type] Brief description\n\nDetailed context:\n- Purpose: \n- Related to: \n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>",
+      "default_branch": "main"
+    }
+  },
+  "reminder": "This is Claude's working directory. All new files should be created here and committed to git."
+}

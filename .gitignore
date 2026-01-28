@@ -1,0 +1,49 @@
+# Sensitive files - DO NOT COMMIT
+*.key
+*.pem
+*.env
+*.secret
+.env
+.env.*
+secrets/
+credentials/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# OS
+Thumbs.db
+.Trashes
+
+# Backup files
+*.bak
+*.backup
+*_backup
+
+# Output files that shouldn't be versioned
+*.out
+*.output
