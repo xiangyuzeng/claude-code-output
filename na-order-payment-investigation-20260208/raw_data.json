@@ -1,0 +1,117 @@
+{
+  "investigation_metadata": {
+    "timestamp_unix": 1770514066,
+    "timestamp_utc": "2026-02-08T01:27:46Z",
+    "timestamp_eastern": "2026-02-07T20:27:46-05:00",
+    "day_of_week": "Saturday",
+    "datasource_uid": "df8o21agxtkw0d",
+    "datasource_name": "UMBQuerier-Luckin",
+    "namespace": "rd-sales",
+    "cluster": "prod-worker01-eks-us",
+    "correction_note": "Previous investigation incorrectly stated Sunday 1:47 AM - actual time is Saturday 8:27 PM EST"
+  },
+  "verdict": {
+    "status": "FALSE_ALARM",
+    "reason": "Normal Saturday evening wind-down - stores closing around 9 PM",
+    "severity_recommendation": "DOWNGRADE_TO_INFORMATIONAL",
+    "action_required": "NONE",
+    "alert_tuning_required": true,
+    "volume_note": "Today running 40-60% lower than last Saturday - worth monitoring but not an outage"
+  },
+  "current_state": {
+    "order_rate_5m": 0.0033,
+    "payment_rate_5m": 0.0033,
+    "orders_10m": 1,
+    "payments_10m": 1
+  },
+  "historical_comparison": {
+    "yesterday_same_time": {
+      "day": "Friday",
+      "orders_10m": 1
+    },
+    "last_saturday_same_time": {
+      "day": "Saturday",
+      "orders_10m": 2
+    }
+  },
+  "infrastructure_health": {
+    "payment_pods": {
+      "total": 4,
+      "running": 4,
+      "pods": [
+        "isalespaymentservice-pdawsus-6b55ddd5c5-64vn5",
+        "isalespaymentservice-pdawsus-6b55ddd5c5-x272f",
+        "isalespaymentadmin-pdawsus-747d88d44d-6p282",
+        "isalespaymentadmin-pdawsus-747d88d44d-k59pq"
+      ]
+    },
+    "order_pods": {
+      "total": 4,
+      "running": 4,
+      "pods": [
+        "isalesorderservice-pdawsus-678fb79bf4-lxt5w",
+        "isalesorderservice-pdawsus-678fb79bf4-trmf4",
+        "isalesorderadmin-pdawsus-84b5594b6d-5cdjp",
+        "isalesorderadmin-pdawsus-84b5594b6d-jghb2"
+      ]
+    },
+    "mysql": {
+      "salesorder": {"up": 1, "instance": "aws-luckyus-salesorder-rw"},
+      "salespayment": {"up": 1, "instance": "aws-luckyus-salespayment-rw"},
+      "scm_ordering": {"up": 1, "instance": "aws-luckyus-scm-ordering-rw"}
+    },
+    "kafka": {
+      "clusters": [
+        {"name": "iprod-kafka-architecture-cluster", "healthy": 1},
+        {"name": "iprod-kafka-base-cluster", "healthy": 1},
+        {"name": "iprod-kafka-business-cluster", "healthy": 1}
+      ]
+    },
+    "http_errors": {
+      "5xx_rate": 0
+    }
+  },
+  "six_hour_trend_today": {
+    "description": "Orders per hour - Saturday Feb 7, 2026",
+    "data": [
+      {"time_est": "14:28", "orders_per_hour": 320},
+      {"time_est": "15:28", "orders_per_hour": 306},
+      {"time_est": "16:28", "orders_per_hour": 302},
+      {"time_est": "17:28", "orders_per_hour": 280},
+      {"time_est": "18:28", "orders_per_hour": 220},
+      {"time_est": "19:28", "orders_per_hour": 110},
+      {"time_est": "20:28", "orders_per_hour": 14}
+    ]
+  },
+  "six_hour_trend_last_saturday": {
+    "description": "Orders per hour - Saturday Feb 1, 2026 (7 days ago)",
+    "data": [
+      {"time_est": "14:28", "orders_per_hour": 329},
+      {"time_est": "15:28", "orders_per_hour": 340},
+      {"time_est": "16:28", "orders_per_hour": 360},
+      {"time_est": "17:28", "orders_per_hour": 350},
+      {"time_est": "18:28", "orders_per_hour": 270},
+      {"time_est": "19:28", "orders_per_hour": 180},
+      {"time_est": "20:28", "orders_per_hour": 34}
+    ]
+  },
+  "volume_comparison": {
+    "peak_today_vs_last_saturday": "320 vs 329 (-3%)",
+    "evening_8pm_today_vs_last_saturday": "14 vs 34 (-59%)",
+    "overall_assessment": "Today running 40-60% lower volume than last Saturday"
+  },
+  "alert_recommendations": {
+    "current_rule": "sum(rate(order_payment_count[10m])) < 1/600",
+    "problem": "Triggers during normal evening wind-down when stores are closing",
+    "recommended_rules": [
+      {
+        "name": "Business hours only",
+        "rule": "sum(rate(order_payment_count[10m])) < 1/600 and (hour() >= 14 and hour() <= 23)"
+      },
+      {
+        "name": "Comparison-based",
+        "rule": "sum(rate(order_payment_count[10m])) < 0.5 * sum(rate(order_payment_count[10m] offset 24h)) and sum(rate(order_payment_count[10m] offset 24h)) > 0.01"
+      }
+    ]
+  }
+}
