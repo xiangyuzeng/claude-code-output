@@ -54,24 +54,27 @@
           {
             "matcher": { "id": "byName", "options": "allocated_gb" },
             "properties": [
-              { "id": "custom.width", "value": 110 },
-              { "id": "displayName", "value": "已分配(GB)" },
+              { "id": "custom.width", "value": 100 },
+              { "id": "displayName", "value": "已分配" },
+              { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 0 }
             ]
           },
           {
             "matcher": { "id": "byName", "options": "used_gb" },
             "properties": [
-              { "id": "custom.width", "value": 110 },
-              { "id": "displayName", "value": "已使用(GB)" },
+              { "id": "custom.width", "value": 100 },
+              { "id": "displayName", "value": "已使用" },
+              { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 1 }
             ]
           },
           {
             "matcher": { "id": "byName", "options": "free_gb" },
             "properties": [
-              { "id": "custom.width", "value": 110 },
-              { "id": "displayName", "value": "剩余(GB)" },
+              { "id": "custom.width", "value": 100 },
+              { "id": "displayName", "value": "剩余" },
+              { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 1 },
               { "id": "color", "value": { "mode": "thresholds" } },
               { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } },
@@ -112,16 +115,18 @@
           {
             "matcher": { "id": "byName", "options": "max_gb" },
             "properties": [
-              { "id": "custom.width", "value": 110 },
-              { "id": "displayName", "value": "最大(GB)" },
+              { "id": "custom.width", "value": 100 },
+              { "id": "displayName", "value": "最大" },
+              { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 0 }
             ]
           },
           {
             "matcher": { "id": "byName", "options": "can_expand_gb" },
             "properties": [
-              { "id": "custom.width", "value": 120 },
-              { "id": "displayName", "value": "可扩展(GB)" },
+              { "id": "custom.width", "value": 100 },
+              { "id": "displayName", "value": "可扩展" },
+              { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 0 }
             ]
           },
