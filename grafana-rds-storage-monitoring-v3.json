@@ -85,7 +85,7 @@
                   "steps": [
                     { "color": "red", "value": null },
                     { "color": "orange", "value": 10 },
-                    { "color": "green", "value": 50 }
+                    { "color": "green", "value": 15 }
                   ]
                 }
               }
