@@ -73,15 +73,16 @@
               { "id": "custom.width", "value": 90 },
               { "id": "displayName", "value": "剩余(GB)" },
               { "id": "decimals", "value": 1 },
-              { "id": "custom.cellOptions", "value": { "type": "color-background" } },
+              { "id": "color", "value": { "mode": "thresholds" } },
+              { "id": "custom.cellOptions", "value": { "type": "color-background-solid" } },
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "red", "value": null },
-                    { "color": "yellow", "value": 10 },
-                    { "color": "green", "value": 50 }
+                    { "color": "dark-red", "value": null },
+                    { "color": "dark-orange", "value": 10 },
+                    { "color": "dark-green", "value": 50 }
                   ]
                 }
               }
@@ -93,15 +94,16 @@
               { "id": "unit", "value": "percent" },
               { "id": "custom.width", "value": 90 },
               { "id": "displayName", "value": "使用率" },
-              { "id": "custom.cellOptions", "value": { "type": "color-background" } },
+              { "id": "color", "value": { "mode": "thresholds" } },
+              { "id": "custom.cellOptions", "value": { "type": "color-background-solid" } },
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 70 },
-                    { "color": "red", "value": 85 }
+                    { "color": "dark-green", "value": null },
+                    { "color": "dark-orange", "value": 70 },
+                    { "color": "dark-red", "value": 85 }
                   ]
                 }
               }
@@ -128,15 +130,19 @@
             "properties": [
               { "id": "custom.width", "value": 80 },
               { "id": "displayName", "value": "告警" },
-              { "id": "custom.cellOptions", "value": { "type": "color-background" } },
+              { "id": "custom.cellOptions", "value": { "type": "color-background-solid" } },
+              {
+                "id": "color",
+                "value": { "mode": "fixed", "fixedColor": "green" }
+              },
               {
                 "id": "mappings",
                 "value": [
                   {
                     "options": {
-                      "CRITICAL": { "color": "red", "index": 0, "text": "严重" },
-                      "WARNING": { "color": "yellow", "index": 1, "text": "警告" },
-                      "OK": { "color": "green", "index": 2, "text": "正常" }
+                      "CRITICAL": { "color": "dark-red", "index": 0, "text": "严重" },
+                      "WARNING": { "color": "dark-orange", "index": 1, "text": "警告" },
+                      "OK": { "color": "dark-green", "index": 2, "text": "正常" }
                     },
                     "type": "value"
                   }
