@@ -347,7 +347,7 @@
         "legend": {
           "calcs": ["last"],
           "displayMode": "table",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": { "mode": "multi", "sort": "desc" }
