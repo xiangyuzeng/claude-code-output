@@ -54,7 +54,7 @@
           {
             "matcher": { "id": "byName", "options": "allocated_gb" },
             "properties": [
-              { "id": "custom.width", "value": 100 },
+              { "id": "custom.width", "value": 120 },
               { "id": "displayName", "value": "已分配" },
               { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 0 }
@@ -63,7 +63,7 @@
           {
             "matcher": { "id": "byName", "options": "used_gb" },
             "properties": [
-              { "id": "custom.width", "value": 100 },
+              { "id": "custom.width", "value": 120 },
               { "id": "displayName", "value": "已使用" },
               { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 1 }
@@ -72,7 +72,7 @@
           {
             "matcher": { "id": "byName", "options": "free_gb" },
             "properties": [
-              { "id": "custom.width", "value": 100 },
+              { "id": "custom.width", "value": 120 },
               { "id": "displayName", "value": "剩余" },
               { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 1 },
@@ -95,7 +95,7 @@
             "matcher": { "id": "byName", "options": "used_percent" },
             "properties": [
               { "id": "unit", "value": "percent" },
-              { "id": "custom.width", "value": 100 },
+              { "id": "custom.width", "value": 120 },
               { "id": "displayName", "value": "使用率" },
               { "id": "color", "value": { "mode": "thresholds" } },
               { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } },
@@ -115,7 +115,7 @@
           {
             "matcher": { "id": "byName", "options": "max_gb" },
             "properties": [
-              { "id": "custom.width", "value": 100 },
+              { "id": "custom.width", "value": 120 },
               { "id": "displayName", "value": "最大" },
               { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 0 }
@@ -124,7 +124,7 @@
           {
             "matcher": { "id": "byName", "options": "can_expand_gb" },
             "properties": [
-              { "id": "custom.width", "value": 100 },
+              { "id": "custom.width", "value": 120 },
               { "id": "displayName", "value": "可扩展" },
               { "id": "unit", "value": "suffix: GB" },
               { "id": "decimals", "value": 0 }
@@ -133,7 +133,7 @@
           {
             "matcher": { "id": "byName", "options": "alert_level" },
             "properties": [
-              { "id": "custom.width", "value": 100 },
+              { "id": "custom.width", "value": 120 },
               { "id": "displayName", "value": "告警级别" },
               { "id": "color", "value": { "mode": "thresholds" } },
               { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } },
