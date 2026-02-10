@@ -521,16 +521,23 @@
             "uid": "D3SA3spNk"
           },
           "editorMode": "code",
-          "exemplar": false,
           "expr": "max by (domain_name) (aws_es_free_storage_space_average) / 1024",
-          "format": "table",
-          "instant": true,
-          "range": false,
+          "legendFormat": "{{domain_name}}",
+          "range": true,
           "refId": "A"
         }
       ],
       "title": "OpenSearch 域状态概览",
-      "transformations": [],
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": ["lastNotNull"],
+            "mode": "reduceFields",
+            "includeTimeField": false
+          }
+        }
+      ],
       "type": "table"
     },
     {
