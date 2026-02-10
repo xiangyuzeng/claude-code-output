@@ -522,7 +522,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "aws_es_free_storage_space_average / 1024",
+          "expr": "max by (domain_name) (aws_es_free_storage_space_average) / 1024",
           "format": "table",
           "instant": true,
           "range": false,
