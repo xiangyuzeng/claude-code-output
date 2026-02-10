@@ -340,19 +340,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Time"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "domain_name"
+              "options": "Field"
             },
             "properties": [
               {
@@ -367,21 +355,17 @@
           },
           {
             "matcher": {
-              "id": "byName",
-              "options": "Value"
+              "id": "byRegexp",
+              "options": "Last.*"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "剩余空间"
+                "value": "剩余空间 (GB)"
               },
               {
-                "id": "unit",
-                "value": "suffix: GB"
-              },
-              {
-                "id": "custom.width",
-                "value": 120
+                "id": "decimals",
+                "value": 1
               },
               {
                 "id": "custom.cellOptions",
@@ -409,82 +393,6 @@
                     }
                   ]
                 }
-              },
-              {
-                "id": "decimals",
-                "value": 1
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "__name__"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "client_id"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "exported_job"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "instance"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "job"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "namespace"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
               }
             ]
           }
@@ -533,7 +441,7 @@
           "id": "reduce",
           "options": {
             "reducers": ["lastNotNull"],
-            "mode": "reduceFields",
+            "mode": "seriesToRows",
             "includeTimeField": false
           }
         }
