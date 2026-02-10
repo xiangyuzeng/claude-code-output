@@ -340,6 +340,18 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "domain_name"
             },
             "properties": [
@@ -356,7 +368,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "free_storage_gb"
+              "options": "Value"
             },
             "properties": [
               {
@@ -407,176 +419,67 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "cpu_percent"
+              "options": "__name__"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "CPU使用率"
-              },
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "custom.width",
-                "value": 120
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background",
-                  "mode": "basic"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "orange",
-                      "value": 70
-                    },
-                    {
-                      "color": "red",
-                      "value": 85
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "decimals",
-                "value": 1
+                "id": "custom.hidden",
+                "value": true
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "red_status"
+              "options": "client_id"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "红色状态"
-              },
-              {
-                "id": "custom.width",
-                "value": 100
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background",
-                  "mode": "basic"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "red",
-                      "value": 1
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "options": {
-                      "0": {
-                        "color": "green",
-                        "index": 0,
-                        "text": "正常"
-                      },
-                      "1": {
-                        "color": "red",
-                        "index": 1,
-                        "text": "异常"
-                      }
-                    },
-                    "type": "value"
-                  }
-                ]
+                "id": "custom.hidden",
+                "value": true
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "yellow_status"
+              "options": "exported_job"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "黄色状态"
-              },
-              {
-                "id": "custom.width",
-                "value": 100
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background",
-                  "mode": "basic"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 1
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "options": {
-                      "0": {
-                        "color": "green",
-                        "index": 0,
-                        "text": "正常"
-                      },
-                      "1": {
-                        "color": "yellow",
-                        "index": 1,
-                        "text": "警告"
-                      }
-                    },
-                    "type": "value"
-                  }
-                ]
+                "id": "custom.hidden",
+                "value": true
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Time"
+              "options": "instance"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "job"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "namespace"
             },
             "properties": [
               {
@@ -618,76 +521,16 @@
             "uid": "D3SA3spNk"
           },
           "editorMode": "code",
+          "exemplar": false,
           "expr": "aws_es_free_storage_space_average / 1024",
-          "format": "time_series",
+          "format": "table",
           "instant": true,
-          "legendFormat": "{{domain_name}}",
           "range": false,
-          "refId": "free_storage"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "D3SA3spNk"
-          },
-          "editorMode": "code",
-          "expr": "aws_es_cpuutilization_average",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "legendFormat": "{{domain_name}}",
-          "range": false,
-          "refId": "cpu"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "D3SA3spNk"
-          },
-          "editorMode": "code",
-          "expr": "aws_es_cluster_status_red_maximum",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "legendFormat": "{{domain_name}}",
-          "range": false,
-          "refId": "red"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "D3SA3spNk"
-          },
-          "editorMode": "code",
-          "expr": "aws_es_cluster_status_yellow_maximum",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "legendFormat": "{{domain_name}}",
-          "range": false,
-          "refId": "yellow"
+          "refId": "A"
         }
       ],
       "title": "OpenSearch 域状态概览",
-      "transformations": [
-        {
-          "id": "joinByField",
-          "options": {
-            "byField": "Time",
-            "mode": "outer"
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true
-            },
-            "indexByName": {},
-            "renameByName": {}
-          }
-        }
-      ],
+      "transformations": [],
       "type": "table"
     },
     {
