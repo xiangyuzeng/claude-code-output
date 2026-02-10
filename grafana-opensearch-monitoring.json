@@ -619,9 +619,9 @@
           },
           "editorMode": "code",
           "expr": "aws_es_free_storage_space_average / 1024",
-          "format": "table",
+          "format": "time_series",
           "instant": true,
-          "legendFormat": "__auto",
+          "legendFormat": "{{domain_name}}",
           "range": false,
           "refId": "free_storage"
         },
@@ -632,10 +632,10 @@
           },
           "editorMode": "code",
           "expr": "aws_es_cpuutilization_average",
-          "format": "table",
+          "format": "time_series",
           "hide": false,
           "instant": true,
-          "legendFormat": "__auto",
+          "legendFormat": "{{domain_name}}",
           "range": false,
           "refId": "cpu"
         },
@@ -646,10 +646,10 @@
           },
           "editorMode": "code",
           "expr": "aws_es_cluster_status_red_maximum",
-          "format": "table",
+          "format": "time_series",
           "hide": false,
           "instant": true,
-          "legendFormat": "__auto",
+          "legendFormat": "{{domain_name}}",
           "range": false,
           "refId": "red"
         },
@@ -660,10 +660,10 @@
           },
           "editorMode": "code",
           "expr": "aws_es_cluster_status_yellow_maximum",
-          "format": "table",
+          "format": "time_series",
           "hide": false,
           "instant": true,
-          "legendFormat": "__auto",
+          "legendFormat": "{{domain_name}}",
           "range": false,
           "refId": "yellow"
         }
@@ -671,34 +671,20 @@
       "title": "OpenSearch 域状态概览",
       "transformations": [
         {
-          "id": "merge",
-          "options": {}
+          "id": "joinByField",
+          "options": {
+            "byField": "Time",
+            "mode": "outer"
+          }
         },
         {
           "id": "organize",
           "options": {
             "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "client_id": true,
-              "exported_job": true,
-              "instance": true,
-              "job": true,
-              "namespace": true
+              "Time": true
             },
-            "indexByName": {
-              "domain_name": 0,
-              "Value #free_storage": 1,
-              "Value #cpu": 2,
-              "Value #red": 3,
-              "Value #yellow": 4
-            },
-            "renameByName": {
-              "Value #cpu": "cpu_percent",
-              "Value #free_storage": "free_storage_gb",
-              "Value #red": "red_status",
-              "Value #yellow": "yellow_status"
-            }
+            "indexByName": {},
+            "renameByName": {}
           }
         }
       ],
