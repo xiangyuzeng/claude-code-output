@@ -4,12 +4,15 @@
 **报告人**: Claude Code
 **事件类型**: MySQL Exporter 进程异常
 **严重级别**: Warning
+**根本原因**: **RDS 数据库重启**
 
 ---
 
 ## 1. 事件概述
 
-收到 MySQL Exporter 进程异常报警，Job名称为 `db-aws-luckyus-isalescdp`。经过详细分析，确认 exporter 存在间歇性采集超时问题，但底层 MySQL 数据库本身运行正常。
+收到 MySQL Exporter 进程异常报警，Job名称为 `db-aws-luckyus-isalescdp`。
+
+**经过深入分析，确认根本原因是 RDS 数据库在 15:27 UTC 左右进行了重启**，导致 Exporter 在重启期间无法连接数据库，触发告警。数据库重启前已连续运行约 338 天。
 
 ---
 
@@ -64,6 +67,46 @@
 
 ## 4. 根本原因分析
 
+### 4.0 **关键发现：数据库重启**
+
+通过分析 `mysql_global_status_uptime` 指标和直接连接数据库查询，发现**数据库在告警期间进行了重启**：
+
+| 时间点 (UTC) | Uptime 值 | 说明 |
+|--------------|-----------|------|
+| 15:11 (1770821880) | 29,222,715 秒 (**约338天**) | 重启前正常运行 |
+| 15:29 (1770822960) | 66 秒 | 重启后 |
+
+**数据库重启时间计算**：1770822960 - 66 = **15:27:54 UTC**
+
+**Prometheus 原始数据证据**：
+```
+1770821880: uptime = 29222715  (重启前，运行338天)
+--- 数据空白期间：数据库重启中 ---
+1770822960: uptime = 66        (重启后)
+1770823020: uptime = 126
+1770823080: uptime = 186
+...递增中...
+```
+
+**数据库连接验证**：
+```sql
+-- 当前 Uptime 确认
+mysql> SHOW GLOBAL STATUS LIKE 'Uptime';
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| Uptime        | 1904  |  -- 约32分钟，与重启时间吻合
++---------------+-------+
+
+-- 当前数据库状态
+mysql> SELECT @@hostname, @@server_id, @@read_only;
++------------------+------------+-------------+
+| @@hostname       | @@server_id | @@read_only |
++------------------+------------+-------------+
+| ip-172-17-0-194 | 1395265637  | 0           |  -- 主库，正常运行
++------------------+------------+-------------+
+```
+
 ### 4.1 采集耗时对比
 
 通过分析 `mysql_exporter_collector_duration_seconds` 指标，发现采集耗时在异常期间急剧增加：
@@ -117,76 +160,84 @@
 
 ---
 
-## 5. 可能原因
+## 5. 原因确认
 
-### 5.1 数据库层面
+### 5.1 **已确认原因：RDS 数据库重启**
 
-| 可能原因 | 可能性 | 说明 |
-|---------|-------|------|
-| 数据库负载过高 | 高 | CPU/内存压力导致查询响应变慢 |
-| 锁等待/死锁 | 中 | 大事务或锁竞争阻塞 exporter 查询 |
-| 连接池耗尽 | 中 | 可用连接不足导致连接建立缓慢 |
-| 大查询/慢查询 | 中 | 资源密集型查询占用数据库资源 |
+| 原因 | 状态 | 说明 |
+|------|------|------|
+| **RDS 数据库重启/Failover** | **已确认** | 数据库在 15:27 UTC 重启，导致连接中断 |
 
-### 5.2 网络层面
+### 5.2 数据库当前状态（重启后）
 
-| 可能原因 | 可能性 | 说明 |
-|---------|-------|------|
-| 网络延迟增加 | 低 | EKS 到 RDS 网络路径拥塞 |
-| 网络丢包 | 低 | 导致 TCP 重传 |
+通过直接连接数据库验证，**当前数据库运行正常**：
 
-### 5.3 Exporter 层面
+| 指标 | 当前值 | 状态 |
+|------|--------|------|
+| 当前连接数 (Threads_connected) | 61 | 正常 (最大 4000) |
+| 运行线程 (Threads_running) | 3 | 正常 |
+| 锁等待 (Innodb_row_lock_current_waits) | 0 | 无锁等待 |
+| 活跃事务 | 0 | 无长事务 |
+| 慢查询数 (Slow_queries) | 380 | 正常范围 |
+| 连接中断 (Aborted_connects) | 0 | 正常 |
+| 历史最大连接 (Max_used_connections) | 136 | 正常 |
 
-| 可能原因 | 可能性 | 说明 |
-|---------|-------|------|
-| Pod 资源不足 | 低 | CPU/内存限制导致处理缓慢 |
-| 连接泄漏 | 低 | Exporter 内部连接管理问题 |
+### 5.3 排除的其他原因
+
+| 排除原因 | 验证结果 |
+|---------|---------|
+| 数据库负载过高 | 当前 CPU/连接正常 |
+| 锁等待/死锁 | performance_schema.data_lock_waits 为空 |
+| 长事务阻塞 | innodb_trx 无活跃事务 |
+| 慢查询 | 平均查询延迟 < 50ms |
+| 网络问题 | 重启后连接恢复正常 |
 
 ---
 
 ## 6. 建议操作
 
-### 6.1 立即检查
+### 6.1 立即操作（已完成验证）
 
-1. **检查 RDS 实例性能指标**
-   ```
-   - CPUUtilization
-   - DatabaseConnections
-   - ReadLatency / WriteLatency
-   - FreeableMemory
-   ```
+- [x] **数据库状态验证** - 已确认数据库正常运行
+- [x] **连接状态检查** - 当前连接数正常 (61/4000)
+- [x] **锁等待检查** - 无锁等待
+- [x] **长事务检查** - 无长事务
 
-2. **检查当前活跃连接和锁**
-   ```sql
-   -- 查看当前连接数
-   SHOW STATUS LIKE 'Threads_connected';
+### 6.2 后续跟进
 
-   -- 查看锁等待
-   SELECT * FROM information_schema.innodb_lock_waits;
-
-   -- 查看长时间运行的查询
-   SELECT * FROM information_schema.processlist
-   WHERE TIME > 10 ORDER BY TIME DESC;
-   ```
-
-3. **检查 Exporter Pod 状态**
+1. **查明重启原因**
+   - 检查 AWS RDS 事件日志，确认是计划内维护还是故障转移
+   - 登录 AWS Console → RDS → Events 查看详细事件
    ```bash
-   kubectl get pods -n custom-scrape-iprod-us | grep isalescdp
-   kubectl describe pod <pod-name> -n custom-scrape-iprod-us
+   aws rds describe-events \
+     --source-identifier aws-luckyus-isalescdp-rw \
+     --source-type db-instance \
+     --duration 60
    ```
 
-### 6.2 短期修复
+2. **确认 Exporter 恢复**
+   - 监控 `up{job="db-aws-luckyus-isalescdp"}` 是否恢复为 1
+   - 如持续为 0，重启 exporter Pod
 
-1. 如果发现长时间运行的查询，考虑终止
-2. 如果连接数过高，检查是否有连接泄漏
-3. 如果问题持续，重启 exporter Pod
+3. **检查应用连接恢复**
+   - 确认业务应用已重新建立数据库连接
+   - 检查应用日志是否有连接错误
 
-### 6.3 长期优化
+### 6.3 长期建议
 
-1. 调整 Prometheus scrape_timeout 配置（如果合理）
-2. 优化 exporter 采集的指标集合
-3. 为 RDS 实例配置性能告警阈值
-4. 考虑数据库读写分离，减轻主库压力
+1. **配置 RDS 事件通知**
+   - 为重启、故障转移等事件配置 SNS 告警
+   - 提前获知计划内维护窗口
+
+2. **优化告警规则**
+   - 考虑为 exporter down 告警添加 "数据库重启" 的排除条件
+   - 或在告警描述中添加检查数据库 uptime 的提示
+
+3. **监控数据库 Uptime**
+   ```promql
+   # 检测数据库重启
+   changes(mysql_global_status_uptime{job="db-aws-luckyus-isalescdp"}[10m]) > 0
+   ```
 
 ---
 
