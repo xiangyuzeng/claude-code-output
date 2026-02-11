@@ -55,12 +55,27 @@
 
 ## 修复方案
 
-### 方案1: 添加缺失的数据源 (推荐)
+### 方案1: 添加缺失的数据源 (推荐) ✅ 已确认数据库位置
 
-需要创建一个新的MySQL数据源，名称包含 "salesorder"，例如：
-- 名称: `MySQL-salesorder` 或 `MySQL-luckyus-salesorder`
-- 数据库: `luckyus_sales_order`
-- 连接地址: [需要确认RDS实例]
+需要在 Grafana 中创建一个新的 MySQL 数据源：
+
+**数据源配置**:
+- **名称**: `MySQL-salesorder` (或包含 "salesorder" 的任何名称)
+- **类型**: MySQL
+- **主机**: `aws-luckyus-salesorder-rw.cxwu08m2qypw.us-east-1.rds.amazonaws.com`
+- **端口**: `3306`
+- **数据库**: `luckyus_sales_order`
+- **用户**: [需要提供只读用户]
+- **密码**: [需要提供密码]
+
+**创建步骤**:
+1. 登录 Grafana
+2. 进入 Configuration → Data sources
+3. 点击 "Add data source"
+4. 选择 "MySQL"
+5. 填写上述配置信息
+6. 点击 "Save & test"
+7. 刷新仪表板 `luckin-usa-master`
 
 ### 方案2: 临时修复 - 禁用缺失数据的面板
 
@@ -80,21 +95,31 @@ MySQL-Ldas数据源连接到 `luckyus_db_collection` 数据库。需要确认：
 
 ## 下一步操作
 
-1. **确认数据库位置**:
-   ```bash
-   # 检查是否有其他RDS实例包含 luckyus_sales_order 数据库
-   ```
+### 立即修复（推荐）✅
 
-2. **创建新数据源** (如果数据库存在):
-   - 在Grafana中添加新的MySQL数据源
-   - 名称: MySQL-salesorder
-   - 数据库: luckyus_sales_order
-   - 用户权限: 只读权限即可
+1. **在 Grafana 中创建新数据源**:
+   - 名称: `MySQL-salesorder`
+   - 主机: `aws-luckyus-salesorder-rw.cxwu08m2qypw.us-east-1.rds.amazonaws.com`
+   - 数据库: `luckyus_sales_order`
+   - 用户: [需要DBA提供只读用户]
+   - 测试连接成功后保存
 
-3. **或者使用修复后的JSON**:
+2. **验证修复**:
+   - 打开仪表板: https://iumbgrafana.luckincoffee.us/grafana/d/luckin-usa-master/
+   - 检查以下面板是否显示数据:
+     - Revenue Today
+     - Avg Order Value
+     - Top 10 Stores by Orders
+     - Store Performance Table
+     - Store Orders Over Time
+     - 3P Orders by Store
+
+### 临时方案
+
+3. **使用修复后的JSON（如果无法创建数据源）**:
    - 导入 `luckin-usa-master-dashboard-fixed.json`
    - 新UID为 `luckin-usa-master-fixed`
-   - 标记了所有缺失数据源的面板
+   - 标记了所有缺失数据源的面板，其他25个面板正常工作
 
 ## 当前可用的MySQL数据源
 
@@ -114,14 +139,58 @@ MySQL-Ldas数据源连接到 `luckyus_db_collection` 数据库。需要确认：
 
 ## 检查清单
 
-- [ ] 确认 luckyus_sales_order 数据库的RDS实例地址
-- [ ] 验证数据库中是否存在 t_order 表
-- [ ] 创建新的MySQL数据源 (名称包含 "salesorder")
-- [ ] 测试数据源连接
-- [ ] 刷新仪表板确认所有面板正常
+- [x] ~~确认 luckyus_sales_order 数据库的RDS实例地址~~ ✅ 已确认
+  - 主机: `aws-luckyus-salesorder-rw.cxwu08m2qypw.us-east-1.rds.amazonaws.com`
+- [ ] 获取数据库只读用户凭证（联系DBA）
+- [ ] 在 Grafana 中创建新的 MySQL 数据源
+  - 名称必须包含 "salesorder"
+  - 使用上述主机地址
+  - 数据库名: `luckyus_sales_order`
+- [ ] 测试数据源连接（Save & test）
+- [ ] 刷新仪表板确认所有面板正常显示数据
+- [ ] 验证以下6个关键面板:
+  - [ ] Revenue Today
+  - [ ] Avg Order Value
+  - [ ] Top 10 Stores by Orders
+  - [ ] Store Performance Table
+  - [ ] Store Orders Over Time
+  - [ ] 3P Orders by Store
+
+## 快速修复指南
+
+### 命令参考（供DBA使用）
+
+如果需要创建只读用户：
+```sql
+-- 在 aws-luckyus-salesorder-rw RDS 实例上执行
+CREATE USER 'grafana_salesorder_ro'@'%' IDENTIFIED BY 'YOUR_SECURE_PASSWORD';
+GRANT SELECT ON luckyus_sales_order.* TO 'grafana_salesorder_ro'@'%';
+FLUSH PRIVILEGES;
+```
+
+### Grafana 数据源配置（快速复制）
+
+```
+Name: MySQL-salesorder
+Type: MySQL
+Host: aws-luckyus-salesorder-rw.cxwu08m2qypw.us-east-1.rds.amazonaws.com:3306
+Database: luckyus_sales_order
+User: grafana_salesorder_ro (或其他只读用户)
+Password: [从密码管理器获取]
+```
+
+### 测试查询
+创建数据源后，可以用这个查询测试：
+```sql
+SELECT COUNT(*) as order_count, SUM(pay_money) as total_revenue
+FROM luckyus_sales_order.t_order
+WHERE tenant = 'LKUS' AND status = 90 AND DATE(create_time) = CURDATE();
+```
 
 ---
 
 **日期**: 2026-02-11
+**更新**: 已确认 salesorder 数据库位置
 **问题分类**: 数据源配置缺失
 **严重程度**: 中等 (影响6个关键业务指标面板)
+**预计修复时间**: 5-10分钟（创建数据源后立即生效）
